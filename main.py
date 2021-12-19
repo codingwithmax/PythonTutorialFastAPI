@@ -1,5 +1,4 @@
 class Animal:
-    fur_colour = "grey"
     friends = []
 
     def __init__(self, height=100, weight=100):
@@ -23,26 +22,29 @@ class Animal:
     def set_height(self, height):
         self.height = height
 
-
-animal_1 = Animal(height=120, weight=80)
-animal_2 = Animal(height=70, weight=150)
-animal_3 = Animal()
-
-animal_1.print_height()
-
-print(animal_2.get_height())
-
-print(animal_3.height)
-
-print(animal_1.friends, animal_2.get_friends())
-animal_3.friends.append("Jerry")
-
-print(animal_1.friends, animal_2.get_friends())
+    def greet(self):
+        print("This animal makes no sound")
 
 
-print(animal_3.height)
-animal_3.set_height(90)
-print(animal_3.height)
+class Dog(Animal):
+    def __init__(self, height, weight, fur_colour):
+        self.fur_colour = fur_colour
+        super().__init__(height=height, weight=weight)
 
-print(animal_3._private_weight)
-print(animal_3.__very_private_weight)
+    @classmethod
+    def greet(self):
+        print("Woof, woof")
+
+
+class Config:
+    RATE_LIMIT = ...
+    HOST_URL = ...
+
+
+sample_dog = Dog(50, 25, "brown")
+print(sample_dog.fur_colour, sample_dog.height)
+sample_dog.print_height()
+sample_dog.greet()
+
+Dog.greet()
+print("A dog's starting friends are:", Dog.height)
