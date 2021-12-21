@@ -1,29 +1,36 @@
-def response_to_approacher(name, approaching=True):
-    def inner_response(func):
-        def wrapper(*args, **kwargs):
-            if approaching is True:
-                print(f"A {name} is coming")
-            else:
-                print(f"A {name} is leaving")
-            response = func(*args, **kwargs)
-            return response
-
-        return wrapper
-    return inner_response
+import os
 
 
-def print_hello(func):
-    def wrapper(*args, **kwargs):
-        print("hello")
-        return func(*args, **kwargs)
-    return wrapper
+def populate_file(filename):
+    values_to_write = ["hello", "line2", "line3", "and so on"]
+    with open(filename, "w") as out:
+        for value_to_write in values_to_write:
+            out.write(value_to_write)
+            out.write("\n")
 
 
-@response_to_approacher("milkman", False)
-@print_hello
-def conjure_sound(sound):
-    return sound * 2
+def read_file(filename):
+    with open(filename, "r") as in_file:
+        for line in in_file:
+            yield line
 
 
-return_value = conjure_sound("woof")
-print("return_value:", return_value)
+def read_if_exists(filename):
+    if os.path.isfile(filename):
+        yield from read_file(filename)
+    return []
+
+
+filename = "sample_file.txt"
+
+populate_file(filename)
+
+file_contents = read_if_exists(filename)
+
+print(file_contents)
+
+line = next(file_contents)
+print(line)
+
+another_line = next(file_contents)
+print(another_line)
