@@ -1,36 +1,16 @@
-import os
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse, PlainTextResponse
 
 
-def populate_file(filename):
-    values_to_write = ["hello", "line2", "line3", "and so on"]
-    with open(filename, "w") as out:
-        for value_to_write in values_to_write:
-            out.write(value_to_write)
-            out.write("\n")
+app = FastAPI()
 
 
-def read_file(filename):
-    with open(filename, "r") as in_file:
-        for line in in_file:
-            yield line
+@app.get("/test", response_class=JSONResponse)
+def test_endpoint():
+    return {"test key": "some value", "another key": 'another value', 4: "some more values", 5: 4,
+            "nested key": {"some internal key": "some internal value"}}
 
 
-def read_if_exists(filename):
-    if os.path.isfile(filename):
-        yield from read_file(filename)
-    return []
-
-
-filename = "sample_file.txt"
-
-populate_file(filename)
-
-file_contents = read_if_exists(filename)
-
-print(file_contents)
-
-line = next(file_contents)
-print(line)
-
-another_line = next(file_contents)
-print(another_line)
+@app.get("/", response_class=PlainTextResponse)
+def home():
+    return "welcome"
