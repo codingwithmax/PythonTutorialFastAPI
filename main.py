@@ -78,23 +78,31 @@ def get_all_users_with_pagination(start: int, limit: int) -> (list[FullUserProfi
     return list_of_users, total
 
 
-def create_update_user(full_profile_info: FullUserProfile, new_user_id: Optional[int] = None) -> int:
+def create_update_user(full_profile_info: FullUserProfile, user_id: Optional[int] = None) -> int:
+    """
+    Create user and new unique user id if not exist otherwise update the user.
+    Placeholder implementation later to be updated with DB.
+
+    :param full_profile_info: FullUserProfile - User information saved in database.
+    :param user_id: Optional[int] - user_id if already exists, otherwise to be set
+    :return: user_id: int - existing or new user id
+    """
     global profile_infos
     global users_content
 
-    if new_user_id is None:
-        new_user_id = len(profile_infos)
+    if user_id is None:
+        user_id = len(profile_infos)
     liked_posts = full_profile_info.liked_posts
     short_description = full_profile_info.short_description
     long_bio = full_profile_info.long_bio
 
-    users_content[new_user_id] = {"liked_posts": liked_posts}
-    profile_infos[new_user_id] = {
+    users_content[user_id] = {"liked_posts": liked_posts}
+    profile_infos[user_id] = {
         "short_description": short_description,
         "long_bio": long_bio
     }
 
-    return new_user_id
+    return user_id
 
 
 def delete_user(user_id: int) -> None:
@@ -114,7 +122,12 @@ def test_endpoint():
 
 @app.get("/user/{user_id}", response_model=FullUserProfile)
 def get_user_by_id(user_id: int):
+    """
+    Endpoint for retrieving a FullUserProfile by the user's unique integer id
 
+    :param user_id: int - unique monotonically increasing integer id
+    :return: FullUserProfile
+    """
     full_user_profile = get_user_info(user_id)
 
     return full_user_profile
@@ -141,5 +154,6 @@ def get_all_users_paginated(start: int = 0, limit: int = 2):
 @app.post("/users", response_model=CreateUserResponse)
 def add_user(full_profile_info: FullUserProfile):
     user_id = create_update_user(full_profile_info)
+    print("doc string of create_update_user:\n", create_update_user.__doc__)
     created_user = CreateUserResponse(user_id=user_id)
     return created_user
