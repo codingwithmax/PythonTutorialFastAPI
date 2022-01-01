@@ -46,11 +46,14 @@ users_content = {
 }
 
 
-def get_user_info(user_id: int = 0) -> FullUserProfile:
+async def get_user_info(user_id: int = 0) -> FullUserProfile:
 
+    # currently reading from dictionary
     profile_info = profile_infos[user_id]
-
     user_content = users_content[user_id]
+    #later read from database
+    # db case here we can wait
+    # await db read ... user_id
 
     user = User(**user_content)
 
@@ -62,7 +65,7 @@ def get_user_info(user_id: int = 0) -> FullUserProfile:
     return FullUserProfile(**full_user_profile)
 
 
-def get_all_users_with_pagination(start: int, limit: int) -> (list[FullUserProfile], int):
+async def get_all_users_with_pagination(start: int, limit: int) -> (list[FullUserProfile], int):
     list_of_users = []
     keys = list(profile_infos.keys())
     total = len(keys)
@@ -70,7 +73,7 @@ def get_all_users_with_pagination(start: int, limit: int) -> (list[FullUserProfi
         if index < start:
             continue
         current_key = keys[index]
-        user = get_user_info(current_key)
+        user = await get_user_info(current_key)
         list_of_users.append(user)
         if len(list_of_users) >= limit:
             break
@@ -78,15 +81,7 @@ def get_all_users_with_pagination(start: int, limit: int) -> (list[FullUserProfi
     return list_of_users, total
 
 
-def create_update_user(full_profile_info: FullUserProfile, user_id: Optional[int] = None) -> int:
-    """
-    Create user and new unique user id if not exist otherwise update the user.
-    Placeholder implementation later to be updated with DB.
-
-    :param full_profile_info: FullUserProfile - User information saved in database.
-    :param user_id: Optional[int] - user_id if already exists, otherwise to be set
-    :return: user_id: int - existing or new user id
-    """
+async def create_update_user(full_profile_info: FullUserProfile, user_id: Optional[int] = None) -> int:
     global profile_infos
     global users_content
 
@@ -105,7 +100,7 @@ def create_update_user(full_profile_info: FullUserProfile, user_id: Optional[int
     return user_id
 
 
-def delete_user(user_id: int) -> None:
+async def delete_user(user_id: int) -> None:
     global profile_infos
     global users_content
 
@@ -114,46 +109,39 @@ def delete_user(user_id: int) -> None:
 
 
 @app.get("/user/me", response_model=FullUserProfile)
-def test_endpoint():
-    full_user_profile = get_user_info()
+async def test_endpoint():
+    full_user_profile = await get_user_info()
 
     return full_user_profile
 
 
 @app.get("/user/{user_id}", response_model=FullUserProfile)
-def get_user_by_id(user_id: int):
-    """
-    Endpoint for retrieving a FullUserProfile by the user's unique integer id
-
-    :param user_id: int - unique monotonically increasing integer id
-    :return: FullUserProfile
-    """
-    full_user_profile = get_user_info(user_id)
+async def get_user_by_id(user_id: int):
+    full_user_profile = await get_user_info(user_id)
 
     return full_user_profile
 
 
 @app.put("/user/{user_id}")
-def update_user(user_id: int, full_profile_info: FullUserProfile):
-    create_update_user(full_profile_info, user_id)
+async def update_user(user_id: int, full_profile_info: FullUserProfile):
+    await create_update_user(full_profile_info, user_id)
     return None
 
 
 @app.delete("/user/{user_id}")
-def remove_user(user_id: int):
-    delete_user(user_id)
+async def remove_user(user_id: int):
+    await delete_user(user_id)
 
 
 @app.get("/users", response_model=MultipleUsersResponse)
-def get_all_users_paginated(start: int = 0, limit: int = 2):
-    users, total = get_all_users_with_pagination(start, limit)
+async def get_all_users_paginated(start: int = 0, limit: int = 2):
+    users, total = await get_all_users_with_pagination(start, limit)
     formatted_users = MultipleUsersResponse(users=users, total=total)
     return formatted_users
 
 
 @app.post("/users", response_model=CreateUserResponse)
-def add_user(full_profile_info: FullUserProfile):
-    user_id = create_update_user(full_profile_info)
-    print("doc string of create_update_user:\n", create_update_user.__doc__)
+async def add_user(full_profile_info: FullUserProfile):
+    user_id = await create_update_user(full_profile_info)
     created_user = CreateUserResponse(user_id=user_id)
     return created_user
