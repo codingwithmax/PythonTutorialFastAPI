@@ -35,7 +35,7 @@ def create_user_router() -> APIRouter:
     async def remove_user(user_id: int):
         await user_service.delete_user(user_id)
 
-    @user_router.post("/", response_model=CreateUserResponse)
+    @user_router.post("/", response_model=CreateUserResponse, status_code=201)
     async def add_user(full_profile_info: FullUserProfile):
         user_id = await user_service.create_update_user(full_profile_info)
         created_user = CreateUserResponse(user_id=user_id)
