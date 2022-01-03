@@ -5,6 +5,12 @@ from app.schemas.user import (
     MultipleUsersResponse,
 )
 from app.services.user import UserService
+import logging
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename="log.txt")
+logger.setLevel(logging.WARNING)  # debug -> info -> warning -> error -> critical
 
 
 def create_user_router() -> APIRouter:
@@ -25,6 +31,7 @@ def create_user_router() -> APIRouter:
         try:
             full_user_profile = await user_service.get_user_info(user_id)
         except KeyError:
+            logger.error(f"Non-existent user_id: {user_id} was requested")
             raise HTTPException(status_code=404, detail="User doesn't exist")
 
         return full_user_profile
