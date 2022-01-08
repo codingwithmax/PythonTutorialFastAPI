@@ -9,15 +9,6 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format="%(levelname)-6s %(name)-15s %(asctime)s.%(msecs)03d %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    filename="log.txt",
-)
-logger.setLevel(logging.WARNING)  # debug -> info -> warning -> error -> critical
-
-console = logging.StreamHandler()
-logger.addHandler(console)
 
 
 def create_user_router() -> APIRouter:
@@ -35,11 +26,8 @@ def create_user_router() -> APIRouter:
 
     @user_router.get("/{user_id}", response_model=FullUserProfile)
     async def get_user_by_id(user_id: int):
-        try:
-            full_user_profile = await user_service.get_user_info(user_id)
-        except KeyError:
-            logger.error(f"Non-existent user_id: {user_id} was requested")
-            raise HTTPException(status_code=404, detail="User doesn't exist")
+
+        full_user_profile = await user_service.get_user_info(user_id)
 
         return full_user_profile
 
@@ -50,10 +38,8 @@ def create_user_router() -> APIRouter:
 
     @user_router.delete("/{user_id}")
     async def remove_user(user_id: int):
-        try:
-            await user_service.delete_user(user_id)
-        except KeyError:
-            raise HTTPException(status_code=404, detail="User doesn't exist")
+
+        await user_service.delete_user(user_id)
 
     @user_router.post("/", response_model=CreateUserResponse, status_code=201)
     async def add_user(full_profile_info: FullUserProfile):
