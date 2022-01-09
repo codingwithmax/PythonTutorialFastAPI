@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
 from app.schemas.user import (
     CreateUserResponse,
     FullUserProfile,
@@ -6,6 +6,7 @@ from app.schemas.user import (
 )
 from app.services.user import UserService
 import logging
+from app.dependencies import rate_limit
 
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ def create_user_router() -> APIRouter:
     user_router = APIRouter(
         prefix="/user",
         tags=["user"],
+        dependencies=[Depends(rate_limit)]
     )
     user_service = UserService()
 
