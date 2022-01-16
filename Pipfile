@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 requests = "*"
+aiohttp = "*"
 
 [dev-packages]
 mypy = "*"
