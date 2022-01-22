@@ -2,12 +2,13 @@ import asyncio
 import aiohttp
 
 
-async def sample_async_get_request():
+async def sample_async_get_request(base_url: str, endpoint_prefix: str, user_id: int) -> (int, dict):
+    url = f"{base_url}{endpoint_prefix}{user_id}"
     async with aiohttp.ClientSession() as session:
-        async with session.get("http://127.0.0.1:8000/user/0") as response:
-            print(response.status)
-            print(response.headers)
-            print(await response.json())
+        async with session.get(url) as response:
+            json_response = await response.json()
+            status_code = response.status
+            return status_code, json_response, response.headers
 
 
 async def sample_async_post_request():
@@ -26,4 +27,4 @@ async def sample_async_post_request():
             print(await response.json())
 
 
-asyncio.run(sample_async_post_request())
+# asyncio.run(sample_async_post_request())

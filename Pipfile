@@ -15,6 +15,7 @@ mypy = "*"
 pytest = "*"
 pytest-asyncio = "*"
 responses = "*"
+aioresponses = "*"
 
 [requires]
 python_version = "3.9"
