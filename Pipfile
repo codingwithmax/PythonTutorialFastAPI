@@ -16,6 +16,7 @@ pytest = "*"
 pytest-asyncio = "*"
 responses = "*"
 aioresponses = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.9"
