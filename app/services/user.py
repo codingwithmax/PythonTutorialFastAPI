@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 from app.schemas.user import (
     FullUserProfile,
     User,
@@ -12,7 +12,7 @@ class UserService:
         self.profile_infos = profile_infos
         self.users_content = users_content
 
-    async def get_all_users_with_pagination(self, start: int, limit: int) -> (list[FullUserProfile], int):
+    async def get_all_users_with_pagination(self, start: int, limit: int) -> Tuple[list[FullUserProfile], int]:
         list_of_users = []
         keys = list(self.profile_infos.keys())
         total = len(keys)

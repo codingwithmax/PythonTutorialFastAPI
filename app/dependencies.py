@@ -8,7 +8,7 @@ reset_interval = 10
 limit = 50
 
 
-def rate_limit(response: Response) -> Response:
+def rate_limit(response: Response) -> None:
     global start_time
     global count
 
@@ -22,4 +22,4 @@ def rate_limit(response: Response) -> Response:
                                                      })
     count += 1
     response.headers["X-app-rate-limit"] = f"{count}:{limit}"
-    return Response
+    return None
