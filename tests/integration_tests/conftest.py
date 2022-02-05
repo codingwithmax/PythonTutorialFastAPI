@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 import pytest
-from main import create_application
+from app.main import create_application
 
 
 @pytest.fixture(scope='function')
