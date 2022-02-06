@@ -1,12 +1,16 @@
 FROM python:3.9-alpine AS base
 
+ARG ENVIRONMENT
+
 ENV PYROOT /pyroot
 ENV PYTHONUSERBASE ${PYROOT}
 ENV PATH=${PATH}:${PYROOT}/bin
 
 RUN PIP_USER=1 pip install pipenv
 COPY Pipfile* ./
-RUN PIP_USER=1 pipenv install --system --deploy --ignore-pipfile
+
+RUN if [ "$ENVIRONMENT" = "test" ]; then PIP_USER=1 pipenv install --system --deploy --ignore-pipfile --dev; \
+    else PIP_USER=1 pipenv install --system --deploy --ignore-pipfile; fi
 
 FROM python:3.9-alpine
 
