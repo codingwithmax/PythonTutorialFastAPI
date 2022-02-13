@@ -9,6 +9,8 @@ uvicorn = "*"
 pydantic = "*"
 requests = "*"
 aiohttp = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 mypy = "*"

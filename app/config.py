@@ -1,7 +1,8 @@
-import os
+from pydantic import BaseSettings, PostgresDsn
 
 
-class Config:
-    DB_HOST = os.getenv("DB_HOST", "my.database.com")
-    DB_USERNAME = os.getenv("DB_USERNAME")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
+class Config(BaseSettings):
+    host: PostgresDsn
+
+    class Config:
+        env_prefix = "db_"

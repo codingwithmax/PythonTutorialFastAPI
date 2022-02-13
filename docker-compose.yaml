@@ -11,6 +11,11 @@ services:
     entrypoint: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
     volumes:
       - ./app:/usr/src/app
+      - ./models:/usr/src/models
+    environment:
+      - db_host=postgresql://postgres:postgres@postgresdb:5432/postgres
+    depends_on:
+      - postgresdb
 
   app-test:
     build:
