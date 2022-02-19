@@ -25,7 +25,7 @@ class UserService:
         user_infos = []
 
         for user in users:
-            user_info = dict(zip(user.keys(), user.values()))
+            user_info = dict(zip(user._mapping.keys(), user._mapping.values()))
             full_user_profile = FullUserProfile(**user_info)
             user_infos.append(full_user_profile)
 
@@ -37,7 +37,7 @@ class UserService:
         if not user:
             raise UserNotFound(user_id=user_id)
 
-        user_info = dict(zip(user.keys(), user.values()))
+        user_info = dict(zip(user._mapping.keys(), user._mapping.values()))
 
         return FullUserProfile(**user_info)
 

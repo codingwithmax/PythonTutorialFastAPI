@@ -27,6 +27,7 @@ services:
     entrypoint: ["sleep", "infinity"]
     environment:
       - db_host=postgresql://postgres:postgres@testingdb:5432/postgres
+      - app_env=test
     depends_on:
       - testingdb
 
