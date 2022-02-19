@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -9,7 +11,7 @@ class User(BaseModel):
         min_length=1,
         default=None
     )
-    liked_posts: list[int] = Field(
+    liked_posts: Optional[list[int]] = Field(
         description="Array of post ids the user liked",
     )
 
