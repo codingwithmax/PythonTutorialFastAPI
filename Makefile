@@ -1,6 +1,6 @@
 .PHONY: start start_build stop unit_tests check_typing unit_tests_local
 
-UNIT_TESTS=pytest tests
+UNIT_TESTS=pytest tests/unit_tests/*
 
 start:
 	@docker-compose up -d

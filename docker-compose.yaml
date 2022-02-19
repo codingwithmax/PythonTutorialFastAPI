@@ -24,6 +24,11 @@ services:
         - ENVIRONMENT=test
     volumes:
       - .:/usr/src
+    entrypoint: ["sleep", "infinity"]
+    environment:
+      - db_host=postgresql://postgres:postgres@testingdb:5432/postgres
+    depends_on:
+      - testingdb
 
   postgresdb:
     image: postgres:14.1-alpine
@@ -33,6 +38,11 @@ services:
       - .env-local
     volumes:
       - pgdb:/var/lib/postgresql/data
+
+  testingdb:
+    image: postgres:14.1-alpine
+    env_file:
+      - .env-local
 
 volumes:
   pgdb:

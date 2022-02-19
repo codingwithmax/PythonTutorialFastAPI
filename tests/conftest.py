@@ -16,5 +16,5 @@ def invalid_user_delete_id() -> int:
 def sample_full_user_profile() -> FullUserProfile:
     return FullUserProfile(short_description='short descr',
                            long_bio='def',
-                           username='abc',
+                           name='abc',
                            liked_posts=[1, 2, 3])
