@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from app.exceptions import UserNotFound, UserAlreadyExists
 import logging
+from sqlalchemy.exc import IntegrityError
 
 
 logger = logging.getLogger(__name__)
@@ -17,5 +18,10 @@ def add_exception_handlers(app: FastAPI) -> None:
     async def handle_user_not_found_exception(request: Request, exc: UserAlreadyExists):
         logger.error(f"Tried to insert user that already exists")
         return JSONResponse(status_code=400, content="User already exist")
+
+    @app.exception_handler(IntegrityError)
+    async def handle_user_not_found_exception(request: Request, exc: IntegrityError):
+        logger.error(f"Encountered integrity error when inserting user: {str(exc)}")
+        return JSONResponse(status_code=400, content="User conflicts with existing user")
 
     return None

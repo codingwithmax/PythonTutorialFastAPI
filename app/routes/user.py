@@ -33,10 +33,11 @@ def create_user_router(database_client: DatabaseClient) -> APIRouter:
 
         return full_user_profile
 
-    @user_router.put("/{user_id}")
-    async def update_user(user_id: int, full_profile_info: FullUserProfile):
-        await user_service.create_update_user(full_profile_info, user_id)
-        return None
+    @user_router.put("/{user_id}", response_model=CreateUserResponse)
+    async def update_user(user_id: int, full_profile_info: FullUserProfile) -> int:
+        user_id = await user_service.create_update_user(full_profile_info, user_id)
+        created_user = CreateUserResponse(user_id=user_id)
+        return created_user
 
     @user_router.delete("/{user_id}")
     async def remove_user(user_id: int):

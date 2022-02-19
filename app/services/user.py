@@ -49,7 +49,7 @@ class UserService:
         )
         insert_stmt = (
             insert(self.database_client.user)
-            .values(**data)
+            .values(**data)  # for multiple we can easily do e.g. .values([{**data}])
             .returning(self.database_client.user.c.id)
         )
         insert_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["username"])
@@ -59,18 +59,24 @@ class UserService:
         user_id = res[0]
         return user_id
 
-    async def create_update_user(self, full_profile_info: FullUserProfile, user_id: Optional[int] = None) -> int:
-        if user_id is None:
-            user_id = len(self.profile_infos)
-        liked_posts = full_profile_info.liked_posts
-        short_description = full_profile_info.short_description
-        long_bio = full_profile_info.long_bio
-
-        self.users_content[user_id] = {"liked_posts": liked_posts}
-        self.profile_infos[user_id] = {
-            "short_description": short_description,
-            "long_bio": long_bio
-        }
+    async def create_update_user(self, full_profile_info: FullUserProfile, user_id: int) -> int:
+        data_no_id = dict(
+            username=full_profile_info.username,
+            short_description=full_profile_info.short_description,
+            long_bio=full_profile_info.long_bio,
+        )
+        data = {**data_no_id, "id": user_id}
+        insert_stmt = (
+            insert(self.database_client.user)
+            .values(**data)
+        )
+        insert_stmt = insert_stmt.on_conflict_do_update(
+            constraint="user_pkey",
+            set_=data_no_id
+        )
+        res = self.database_client.get_first(insert_stmt)
+        if not res:
+            raise UserAlreadyExists
 
         return user_id
 
