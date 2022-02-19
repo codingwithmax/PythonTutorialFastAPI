@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Union
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import Select
+from sqlalchemy.sql.expression import Select, Delete, Insert
 
 from app.config import Config
 
@@ -26,7 +26,7 @@ class DatabaseClient:
         for table in tables:
             setattr(self, table, self.metadata.tables[table])
 
-    def get_first(self, query: Select) -> Optional[Row]:
+    def get_first(self, query: Union[Select, Insert]) -> Optional[Row]:
         with self.session.begin():
             res = self.session.execute(query).first()
         return res
@@ -39,3 +39,7 @@ class DatabaseClient:
     def get_paginated(self, query: Select, limit: int, offset: int) -> list[Row]:
         query = query.limit(limit).offset(offset)
         return self.get_all(query)
+
+    def exetcute_in_transaction(self, query: Delete):
+        with self.session.begin():
+            self.session.execute(query)

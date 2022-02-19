@@ -4,7 +4,7 @@ from app.schemas.user import (
 )
 from app.exceptions import UserNotFound, UserAlreadyExists
 from app.clients.db import DatabaseClient
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import Select
 from sqlalchemy.dialects.postgresql import insert
@@ -81,12 +81,11 @@ class UserService:
         return user_id
 
     async def delete_user(self, user_id: int) -> None:
-
-        if user_id not in self.profile_infos:
-            raise UserNotFound(user_id=user_id)
-
-        del self.profile_infos[user_id]
-        del self.users_content[user_id]
+        delete_stmt = (
+            delete(self.database_client.user)
+            .where(self.database_client.user.c.id == user_id)
+        )
+        self.database_client.exetcute_in_transaction(delete_stmt)
 
     def _get_user_info_query(self, user_id: Optional[int] = None) -> Select:
         liked_posts_query = (
