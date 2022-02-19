@@ -4,7 +4,7 @@ from app.schemas.user import (
 )
 from app.exceptions import UserNotFound, UserAlreadyExists
 from app.clients.db import DatabaseClient
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import Select
 from sqlalchemy.dialects.postgresql import insert
@@ -69,17 +69,23 @@ class UserService:
             long_bio=full_profile_info.long_bio,
         )
         data = {**data_no_id, "id": user_id}
-        insert_stmt = (
-            insert(self.database_client.user)
-            .values(**data)
-        )
-        insert_stmt = insert_stmt.on_conflict_do_update(
-            constraint="user_pkey",
-            set_=data_no_id
-        )
-        res = await self.database_client.get_first(insert_stmt)
-        if not res:
-            raise UserAlreadyExists
+
+        query = self._get_user_info_query(user_id)
+        user = await self.database_client.get_first(query)
+        if not user:
+            stmt = (
+                insert(self.database_client.user)
+                .values(**data)
+                .returning(self.database_client.user.c.id)
+            )
+        else:
+            stmt = (
+                update(self.database_client.user)
+                .where(self.database_client.user.c.id == user_id)
+                .values(**data_no_id)
+            )
+
+        await self.database_client.get_first(stmt)
 
         return user_id
 
