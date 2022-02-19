@@ -9,6 +9,9 @@ uvicorn = "*"
 pydantic = "*"
 requests = "*"
 aiohttp = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+databases = {extras = ["postgresql"], version = "*"}
 
 [dev-packages]
 mypy = "*"
@@ -18,8 +21,6 @@ responses = "*"
 aioresponses = "*"
 pytest-cov = "*"
 alembic = "*"
-sqlalchemy = "*"
-psycopg2-binary = "*"
 
 [requires]
 python_version = "3.9"

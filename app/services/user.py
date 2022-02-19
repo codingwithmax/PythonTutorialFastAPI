@@ -17,13 +17,15 @@ class UserService:
 
     async def get_all_users_with_pagination(self, offset: int, limit: int) -> Tuple[list[FullUserProfile], int]:
         query = self._get_user_info_query()
-        users = self.database_client.get_paginated(query, limit, offset)
+        users = await self.database_client.get_paginated(query, limit, offset)
 
         total_query = select(func.count(self.database_client.user.c.id).label("total"))
-        total = self.database_client.get_first(total_query)[0]
+        total_res = await self.database_client.get_first(total_query)
+        total = total_res[0]
         user_infos = []
+
         for user in users:
-            user_info = dict(zip(user.keys(), user))
+            user_info = dict(zip(user.keys(), user.values()))
             full_user_profile = FullUserProfile(**user_info)
             user_infos.append(full_user_profile)
 
@@ -31,11 +33,11 @@ class UserService:
 
     async def get_user_info(self, user_id: int = 0) -> FullUserProfile:
         query = self._get_user_info_query(user_id)
-        user = self.database_client.get_first(query)
+        user = await self.database_client.get_first(query)
         if not user:
             raise UserNotFound(user_id=user_id)
 
-        user_info = dict(zip(user.keys(), user))
+        user_info = dict(zip(user.keys(), user.values()))
 
         return FullUserProfile(**user_info)
 
@@ -53,7 +55,8 @@ class UserService:
             .returning(self.database_client.user.c.id)
         )
         insert_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["username"])
-        res = self.database_client.get_first(insert_stmt)
+        res = await self.database_client.get_first(insert_stmt)
+
         if not res:
             raise UserAlreadyExists
         user_id = res[0]
@@ -74,7 +77,7 @@ class UserService:
             constraint="user_pkey",
             set_=data_no_id
         )
-        res = self.database_client.get_first(insert_stmt)
+        res = await self.database_client.get_first(insert_stmt)
         if not res:
             raise UserAlreadyExists
 
@@ -85,7 +88,7 @@ class UserService:
             delete(self.database_client.user)
             .where(self.database_client.user.c.id == user_id)
         )
-        self.database_client.exetcute_in_transaction(delete_stmt)
+        await self.database_client.execute_in_transaction(delete_stmt)
 
     def _get_user_info_query(self, user_id: Optional[int] = None) -> Select:
         liked_posts_query = (
