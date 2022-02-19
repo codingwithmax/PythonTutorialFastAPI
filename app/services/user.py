@@ -1,13 +1,13 @@
 from typing import Optional, Tuple
 from app.schemas.user import (
     FullUserProfile,
-    User,
 )
-from app.exceptions import UserNotFound
+from app.exceptions import UserNotFound, UserAlreadyExists
 from app.clients.db import DatabaseClient
 from sqlalchemy import select
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import Select
+from sqlalchemy.dialects.postgresql import insert
 
 
 class UserService:
@@ -38,6 +38,26 @@ class UserService:
         user_info = dict(zip(user.keys(), user))
 
         return FullUserProfile(**user_info)
+
+    async def create_user(self, full_profile_info: FullUserProfile) -> int:
+        # Alternatively could create pydantic model, but will require some refactor
+        # of other models to keep things clean
+        data = dict(
+            username=full_profile_info.username,
+            short_description=full_profile_info.short_description,
+            long_bio=full_profile_info.long_bio,
+        )
+        insert_stmt = (
+            insert(self.database_client.user)
+            .values(**data)
+            .returning(self.database_client.user.c.id)
+        )
+        insert_stmt = insert_stmt.on_conflict_do_nothing(index_elements=["username"])
+        res = self.database_client.get_first(insert_stmt)
+        if not res:
+            raise UserAlreadyExists
+        user_id = res[0]
+        return user_id
 
     async def create_update_user(self, full_profile_info: FullUserProfile, user_id: Optional[int] = None) -> int:
         if user_id is None:
