@@ -8,7 +8,6 @@ from sqlalchemy.sql.expression import Select
 from app.config import Config
 
 
-
 class DatabaseClient:
     def __init__(self, config: Config, tables: Optional[list[str]]):
         self.config = config

@@ -7,18 +7,18 @@ from app.schemas.user import (
 from app.services.user import UserService
 import logging
 from app.dependencies import rate_limit
-
+from app.clients.db import DatabaseClient
 
 logger = logging.getLogger(__name__)
 
 
-def create_user_router(profile_infos: dict, users_content: dict) -> APIRouter:
+def create_user_router(database_client: DatabaseClient) -> APIRouter:
     user_router = APIRouter(
         prefix="/user",
         tags=["user"],
         dependencies=[Depends(rate_limit)]
     )
-    user_service = UserService(profile_infos, users_content)
+    user_service = UserService(database_client)
 
     @user_router.get("/all", response_model=MultipleUsersResponse)
     async def get_all_users_paginated(start: int = 0, limit: int = 2):
