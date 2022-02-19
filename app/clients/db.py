@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Union
 
 from databases import Database
@@ -16,8 +17,10 @@ class DatabaseClient:
         self._reflect_metadata()  # metadata.tables["user"]
         if tables:  # does not trigger if tables is None, or len(tables) == 0
             self._set_internal_database_tables(tables)
-
-        self.database = Database(self.config.host)
+        if os.getenv("app_env") == "test":
+            self.database = Database(self.config.host, force_rollback=True)
+        else:
+            self.database = Database(self.config.host)
 
     def _reflect_metadata(self) -> None:
         self.metadata.reflect()
