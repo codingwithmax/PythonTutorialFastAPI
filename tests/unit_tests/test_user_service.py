@@ -3,13 +3,9 @@ from app.exceptions import UserNotFound
 
 
 @pytest.mark.asyncio
-async def test_delete_user_works_properly(user_service, valid_user_id):
-    await user_service.delete_user(valid_user_id)
-    assert valid_user_id not in user_service.profile_infos
-    assert valid_user_id not in user_service.users_content
-
-
-@pytest.mark.asyncio
-async def test_delete_invalid_user_raises_proper_exception(user_service, invalid_user_delete_id):
+async def test_delete_user_works_properly(user_service, sample_full_user_profile):
+    user_id = await user_service.create_user(sample_full_user_profile)
+    assert user_id is not None
+    await user_service.delete_user(user_id)
     with pytest.raises(UserNotFound):
-        await user_service.delete_user(invalid_user_delete_id)
+        await user_service.get_user_info(user_id)

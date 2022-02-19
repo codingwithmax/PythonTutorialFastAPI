@@ -3,7 +3,6 @@ from typing import Optional, Union
 from databases import Database
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import Row
-from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import Select, Delete, Insert
 
 from app.config import Config
@@ -13,7 +12,6 @@ class DatabaseClient:
     def __init__(self, config: Config, tables: Optional[list[str]]):
         self.config = config
         self.engine = create_engine(self.config.host, future=True)
-        self.session = Session(bind=self.engine, future=True)
         self.metadata = MetaData(self.engine)
         self._reflect_metadata()  # metadata.tables["user"]
         if tables:  # does not trigger if tables is None, or len(tables) == 0
