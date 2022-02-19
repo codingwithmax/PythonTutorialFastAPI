@@ -50,4 +50,12 @@ def create_user_router(database_client: DatabaseClient) -> APIRouter:
         created_user = CreateUserResponse(user_id=user_id)
         return created_user
 
+    @user_router.on_event("startup")
+    async def startup():
+        await database_client.connect()
+
+    @user_router.on_event("shutdown")
+    async def shutdown():
+        await database_client.disconnect()
+
     return user_router
