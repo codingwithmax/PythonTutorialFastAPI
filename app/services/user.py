@@ -70,7 +70,7 @@ class UserService:
         )
         data = {**data_no_id, "id": user_id}
 
-        query = self._get_user_info_query(user_id)
+        query = select(self.database_client.user).where(self.database_client.user.c.id == user_id)
         user = await self.database_client.get_first(query)
         if not user:
             stmt = (

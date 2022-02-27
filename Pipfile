@@ -21,6 +21,7 @@ responses = "*"
 aioresponses = "*"
 pytest-cov = "*"
 alembic = "*"
+aiosqlite = "*"
 
 [requires]
 python_version = "3.9"

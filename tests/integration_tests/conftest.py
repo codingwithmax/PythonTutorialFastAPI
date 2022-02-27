@@ -1,12 +1,13 @@
 import pytest
 from app.create_app import create_application
-from models import recreate_postgres_tables
+from models import recreate_tables
+from models.base import engine
 
 
 @pytest.fixture(scope='session')
 def base_testing_app():
     app = create_application()
-    recreate_postgres_tables()
+    recreate_tables(engine)
     return app
 
 
