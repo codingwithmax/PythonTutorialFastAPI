@@ -17,7 +17,7 @@ class UserService:
 
     async def get_all_users_with_pagination(self, offset: int, limit: int) -> Tuple[list[FullUserProfile], int]:
         query = self._get_user_info_query()
-        users = await self.database_client.get_paginated(query, limit, offset)
+        users = await self.database_client.get_paginated(query, limit, offset=offset)
 
         total_query = select(func.count(self.database_client.user.c.id).label("total"))
         total_res = await self.database_client.get_first(total_query)
@@ -70,7 +70,7 @@ class UserService:
         )
         data = {**data_no_id, "id": user_id}
 
-        query = self._get_user_info_query(user_id)
+        query = select(self.database_client.user).where(self.database_client.user.c.id == user_id)
         user = await self.database_client.get_first(query)
         if not user:
             stmt = (

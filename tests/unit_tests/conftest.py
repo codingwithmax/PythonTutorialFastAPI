@@ -5,6 +5,9 @@ from app.clients.db import DatabaseClient
 from models import recreate_postgres_tables
 import pytest_asyncio
 from app.schemas.user import FullUserProfile
+from models import User, LikedPost
+
+from unittest.mock import AsyncMock
 
 
 @pytest.fixture
@@ -54,3 +57,20 @@ def user_service(testing_db_client):
     user_service = UserService(testing_db_client)
     return user_service
 
+
+@pytest.fixture
+def mocking_database_client() -> DatabaseClient:
+    def side_effect(*args, **kwargs):
+        return (1, )
+
+    mock = AsyncMock()
+    mock.user = User.__table__
+    mock.liked_post = LikedPost.__table__
+    mock.get_first.side_effect = side_effect  # AsyncMock(side_effect=[(1, ), (2, )])
+    return mock
+
+
+@pytest.fixture
+def user_service_mocked_db(mocking_database_client: DatabaseClient) -> UserService:
+    user_service = UserService(mocking_database_client)
+    return user_service
