@@ -13,9 +13,11 @@ services:
       - ./app:/usr/src/app
       - ./models:/usr/src/models
     environment:
-      - db_host=postgresql://postgres:postgres@postgresdb:5432/postgres
+      - db_postgres_host=postgresql://postgres:postgres@postgresdb:5432/postgres
+      - db_redis_host=redis://redis
     depends_on:
       - postgresdb
+      - redis
 
   app-test:
     build:
@@ -26,7 +28,7 @@ services:
       - .:/usr/src
     entrypoint: ["sleep", "infinity"]
     environment:
-      - db_host=postgresql://postgres:postgres@testingdb:5432/postgres
+      - db_postgres_host=postgresql://postgres:postgres@testingdb:5432/postgres
       - app_env=test
     depends_on:
       - testingdb

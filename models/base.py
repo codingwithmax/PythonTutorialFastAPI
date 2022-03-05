@@ -6,7 +6,7 @@ from app.config import Config
 Base = declarative_base()
 config = Config()
 
-engine = create_engine(config.host)
+engine = create_engine(config.postgres_host)
 
 
 def recreate_postgres_tables():
