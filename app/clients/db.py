@@ -12,15 +12,15 @@ from app.config import Config
 class DatabaseClient:
     def __init__(self, config: Config, tables: Optional[list[str]]):
         self.config = config
-        self.engine = create_engine(self.config.host, future=True)
+        self.engine = create_engine(self.config.postgres_host, future=True)
         self.metadata = MetaData(self.engine)
         self._reflect_metadata()  # metadata.tables["user"]
         if tables:  # does not trigger if tables is None, or len(tables) == 0
             self._set_internal_database_tables(tables)
         if os.getenv("app_env") == "test":
-            self.database = Database(self.config.host, force_rollback=True)
+            self.database = Database(self.config.postgres_host, force_rollback=True)
         else:
-            self.database = Database(self.config.host)
+            self.database = Database(self.config.postgres_host)
 
     def _reflect_metadata(self) -> None:
         self.metadata.reflect()
