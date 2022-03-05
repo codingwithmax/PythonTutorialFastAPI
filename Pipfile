@@ -12,6 +12,7 @@ aiohttp = "*"
 sqlalchemy = "*"
 psycopg2-binary = "*"
 databases = {extras = ["postgresql"], version = "*"}
+aioredis = "*"
 
 [dev-packages]
 mypy = "*"
