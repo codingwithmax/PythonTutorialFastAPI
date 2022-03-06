@@ -26,8 +26,17 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
 
     @user_router.get("/all", response_model=MultipleUsersResponse)
     async def get_all_users_paginated(start: int = 0, limit: int = 2):
+        cache_key = redis_cache.get_pagination_key(limit)
+        multiple_users_response_str = await redis_cache.hget(cache_key, start, redis_cache.user_prefix)
+        if multiple_users_response_str:
+            return MultipleUsersResponse(**json.loads(multiple_users_response_str))
+
         users, total = await user_service.get_all_users_with_pagination(start, limit)
         formatted_users = MultipleUsersResponse(users=users, total=total)
+
+        await redis_cache.hset(cache_key, {start: formatted_users.json(by_alias=True)}, redis_cache.user_prefix)
+        await redis_cache.sadd(redis_cache.get_pagination_set_key(), limit, redis_cache.user_prefix)
+
         return formatted_users
 
     @user_router.get("/{user_id}", response_model=FullUserProfile)
@@ -46,6 +55,7 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
     async def update_user(user_id: int, full_profile_info: FullUserProfile) -> int:
         user_id = await user_service.create_update_user(full_profile_info, user_id)
         await redis_cache.set(user_id, full_profile_info.json(), redis_cache.user_prefix)
+        await redis_cache.clear_pagination_cache(redis_cache.user_prefix)
         created_user = CreateUserResponse(user_id=user_id)
         return created_user
 
@@ -54,11 +64,13 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
 
         await user_service.delete_user(user_id)
         await redis_cache.delete(user_id, prefix=redis_cache.user_prefix)
+        await redis_cache.clear_pagination_cache(redis_cache.user_prefix)
 
     @user_router.post("/", response_model=CreateUserResponse, status_code=201)
     async def add_user(full_profile_info: FullUserProfile):
         user_id = await user_service.create_user(full_profile_info)
         await redis_cache.set(user_id, full_profile_info.json(), redis_cache.user_prefix)
+        await redis_cache.clear_pagination_cache(redis_cache.user_prefix)
         created_user = CreateUserResponse(user_id=user_id)
         return created_user
 
