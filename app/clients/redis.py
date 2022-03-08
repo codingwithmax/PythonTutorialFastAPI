@@ -1,4 +1,5 @@
 import logging
+import pickle
 
 import aioredis
 
@@ -13,22 +14,23 @@ class RedisCache:
 
     def __init__(self, config: Config, ttl: int = 60 * 60):
         self._host = config.redis_host
-        self.redis = aioredis.from_url(self._host, decode_responses=True, db=0)
+        self.redis = aioredis.from_url(self._host, db=0)
         self.ttl = ttl
 
     async def get(self, key, prefix):
         try:
             storage_key = f"{prefix}:{key}"
             val = await self.redis.get(storage_key)
-            return val
+            return pickle.loads(val)
         except Exception as e:
-            logger.error(f"Encountered error {str(e)} when trying to read: {storage_key}")
+            logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
         return
 
     async def set(self, key, value, prefix):
         try:
             storage_key = f"{prefix}:{key}"
-            await self.redis.set(storage_key, value, ex=self.ttl)
+            serialized_value = pickle.dumps(value)
+            await self.redis.set(storage_key, serialized_value, ex=self.ttl)
         except Exception as e:
             logger.error(f"Encountered error {str(e)} when trying to save: {value} to {storage_key}")
         return
@@ -39,12 +41,20 @@ class RedisCache:
         return
 
     async def hget(self, name, key, prefix):
-        storage_name = self.create_storage_name(name, prefix)
-        return await self.redis.hget(storage_name, key)
+        try:
+            storage_name = self.create_storage_name(name, prefix)
+            val = await self.redis.hget(storage_name, key)
+            return pickle.loads(val)
+        except Exception as e:
+            logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
+        return
 
     async def hset(self, name, mapping, prefix):
         storage_name = self.create_storage_name(name, prefix)
-        await self.redis.hset(storage_name, mapping=mapping)
+        serialized_mapping = {}
+        for key in mapping:
+            serialized_mapping[key] = pickle.dumps(mapping[key])
+        await self.redis.hset(storage_name, mapping=serialized_mapping)
         await self.redis.expire(storage_name, self.ttl)
 
     async def hdel(self, name, key, prefix):
