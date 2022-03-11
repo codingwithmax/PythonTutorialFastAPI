@@ -80,6 +80,9 @@ class RedisCache:
             await self.redis.delete(pagination_storage_key)
             await self.redis.srem(set_storage_name, limit)
 
+    async def flushdb(self):
+        await self.redis.flushdb(asynchronous=True)
+
     @staticmethod
     def create_storage_name(key, prefix):
         return f"{prefix}:{key}"

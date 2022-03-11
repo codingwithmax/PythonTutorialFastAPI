@@ -58,6 +58,11 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
         created_user = CreateUserResponse(user_id=user_id)
         return created_user
 
+    @user_router.delete("/flush-cache", status_code=200)
+    async def flushdb():
+        await redis_cache.flushdb()
+        return
+
     @user_router.delete("/{user_id}")
     async def remove_user(user_id: int):
 
