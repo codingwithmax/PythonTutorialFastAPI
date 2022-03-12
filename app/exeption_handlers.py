@@ -21,7 +21,7 @@ def add_exception_handlers(app: FastAPI) -> None:
     async def handle_user_already_exists_exception(
         request: Request, exc: UserAlreadyExists
     ) -> JSONResponse:
-        logger.error(f"Tried to insert user that already exists")
+        logger.error("Tried to insert user that already exists")
         return JSONResponse(status_code=400, content="User already exist")
 
     @app.exception_handler(IntegrityError)

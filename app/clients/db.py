@@ -32,7 +32,6 @@ class DatabaseClient:
         await self.database.disconnect()
 
     def _set_internal_database_tables(self) -> None:
-        # e.g. sets DatabaseClient.user = DatabaseClient.metadata.tables["user"] if "user" in tables
         self.user = self.metadata.tables["user"]
         self.liked_post = self.metadata.tables["liked_post"]
 
