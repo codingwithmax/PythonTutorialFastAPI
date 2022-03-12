@@ -9,7 +9,7 @@ class User(BaseModel):
         title="The Username",
         description="This is the username of the user",
         min_length=1,
-        default=None
+        default=None,
     )
     liked_posts: Optional[list[int]] = Field(
         description="Array of post ids the user liked",

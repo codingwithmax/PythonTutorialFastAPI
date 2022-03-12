@@ -16,7 +16,7 @@ def _profile_infos() -> dict[int, dict[str, str]]:
     val = {
         0: {
             "short_description": "My bio description",
-            "long_bio": "This is our longer bio"
+            "long_bio": "This is our longer bio",
         }
     }
     return val
@@ -34,10 +34,13 @@ def _users_content() -> dict:
 
 @pytest.fixture(scope="session")
 def sample_full_user_profile() -> FullUserProfile:
-    return FullUserProfile(short_description='short descr',
-                           long_bio='def',
-                           name='abc',
-                           liked_posts=[1, 2, 3])
+    return FullUserProfile(
+        short_description="short descr",
+        long_bio="def",
+        name="abc",
+        liked_posts=[1, 2, 3],
+    )
+
 
 @pytest.fixture(scope="session")
 def testing_config() -> Config:
@@ -62,7 +65,7 @@ def user_service(testing_db_client: DatabaseClient) -> UserService:
 @pytest.fixture
 def mocking_database_client() -> DatabaseClient:
     def side_effect(*args: Any, **kwargs: Any) -> Tuple[int]:
-        return (1, )
+        return (1,)
 
     mock = AsyncMock()
     mock.user = User.__table__
