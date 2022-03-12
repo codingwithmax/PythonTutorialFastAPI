@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from app.routes.user import create_user_router
-from app.exeption_handlers import add_exception_handlers
+
 from app.clients.db import DatabaseClient
 from app.clients.redis import RedisCache
 from app.config import Config
+from app.exeption_handlers import add_exception_handlers
+from app.routes.user import create_user_router
 
 
 def create_application() -> FastAPI:

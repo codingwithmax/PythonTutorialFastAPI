@@ -1,13 +1,13 @@
 from typing import Optional, Tuple, Union
-from app.schemas.user import (
-    FullUserProfile,
-)
-from app.exceptions import UserNotFound, UserAlreadyExists
-from app.clients.db import DatabaseClient
-from sqlalchemy import select, delete, update
+
+from sqlalchemy import delete, select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import Select
-from sqlalchemy.dialects.postgresql import insert
+
+from app.clients.db import DatabaseClient
+from app.exceptions import UserAlreadyExists, UserNotFound
+from app.schemas.user import FullUserProfile
 
 
 class UserService:

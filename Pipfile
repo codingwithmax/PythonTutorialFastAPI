@@ -23,6 +23,7 @@ responses = "*"
 aioresponses = "*"
 pytest-cov = "*"
 alembic = "*"
+isort = "*"
 
 [requires]
 python_version = "3.9"

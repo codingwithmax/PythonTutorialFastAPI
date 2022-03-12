@@ -18,5 +18,8 @@ unit_tests:
 unit_tests_local:
 	@$(UNIT_TESTS)
 
-check_typing:
-	@docker-compose exec app-test mypy .
+check_lint:
+	@docker-compose exec app-test mypy . && isort --check-only .
+
+fix_lint:
+	@docker-compose exec app-test isort .

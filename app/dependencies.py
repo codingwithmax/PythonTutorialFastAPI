@@ -1,6 +1,6 @@
-from fastapi import Response, HTTPException
 import time
 
+from fastapi import HTTPException, Response
 
 count = 0
 start_time = time.time()

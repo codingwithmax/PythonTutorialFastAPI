@@ -1,14 +1,14 @@
-import pytest
-from app.services.user import UserService
-from app.config import Config
-from app.clients.db import DatabaseClient
-from models import recreate_postgres_tables
-import pytest_asyncio
-from app.schemas.user import FullUserProfile
-from models import User, LikedPost
-
+from typing import Any, Tuple
 from unittest.mock import AsyncMock
-from typing import Tuple, Any
+
+import pytest
+import pytest_asyncio
+
+from app.clients.db import DatabaseClient
+from app.config import Config
+from app.schemas.user import FullUserProfile
+from app.services.user import UserService
+from models import LikedPost, User, recreate_postgres_tables
 
 
 @pytest.fixture

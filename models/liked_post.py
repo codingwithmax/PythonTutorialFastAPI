@@ -1,8 +1,15 @@
 import datetime
 
-from models.base import Base
+from sqlalchemy import (
+    TIMESTAMP,
+    Column,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    UniqueConstraint,
+)
 
-from sqlalchemy import Column, Integer, TIMESTAMP, UniqueConstraint, ForeignKeyConstraint, Index
+from models.base import Base
 
 
 class LikedPost(Base):
