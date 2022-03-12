@@ -10,13 +10,13 @@ from app.config import Config
 
 
 class DatabaseClient:
-    def __init__(self, config: Config, tables: Optional[list[str]]):
+    def __init__(self, config: Config):
         self.config = config
         self.engine = create_engine(self.config.postgres_host, future=True)
         self.metadata = MetaData(self.engine)
         self._reflect_metadata()  # metadata.tables["user"]
-        if tables:  # does not trigger if tables is None, or len(tables) == 0
-            self._set_internal_database_tables(tables)
+
+        self._set_internal_database_tables()
         if os.getenv("app_env") == "test":
             self.database = Database(self.config.postgres_host, force_rollback=True)
         else:
@@ -25,13 +25,13 @@ class DatabaseClient:
     def _reflect_metadata(self) -> None:
         self.metadata.reflect()
 
-    async def connect(self):
+    async def connect(self) -> None:
         await self.database.connect()
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         await self.database.disconnect()
 
-    def _set_internal_database_tables(self, tables: list[str]):
+    def _set_internal_database_tables(self) -> None:
         # e.g. sets DatabaseClient.user = DatabaseClient.metadata.tables["user"] if "user" in tables
         self.user = self.metadata.tables["user"]
         self.liked_post = self.metadata.tables["liked_post"]
@@ -50,6 +50,6 @@ class DatabaseClient:
         query = query.limit(limit).offset(offset)
         return await self.get_all(query)
 
-    async def execute_in_transaction(self, query: Delete):
+    async def execute_in_transaction(self, query: Delete) -> None:
         async with self.database.transaction():
             await self.database.execute(query)

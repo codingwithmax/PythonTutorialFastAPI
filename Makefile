@@ -12,11 +12,11 @@ stop:
 	@docker-compose down
 
 unit_tests:
-	@docker-compose exec -T app-test \
+	@docker-compose exec app-test \
 	$(UNIT_TESTS)
 
 unit_tests_local:
 	@$(UNIT_TESTS)
 
 check_typing:
-	@docker-compose exec -T app-test mypy .
+	@docker-compose exec app-test mypy .

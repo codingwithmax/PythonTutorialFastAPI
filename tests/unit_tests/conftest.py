@@ -8,10 +8,11 @@ from app.schemas.user import FullUserProfile
 from models import User, LikedPost
 
 from unittest.mock import AsyncMock
+from typing import Tuple, Any
 
 
 @pytest.fixture
-def _profile_infos():
+def _profile_infos() -> dict[int, dict[str, str]]:
     val = {
         0: {
             "short_description": "My bio description",
@@ -22,7 +23,7 @@ def _profile_infos():
 
 
 @pytest.fixture
-def _users_content():
+def _users_content() -> dict:
     val = {
         0: {
             "liked_posts": [1] * 9,
@@ -44,23 +45,23 @@ def testing_config() -> Config:
 
 
 @pytest_asyncio.fixture
-async def testing_db_client(testing_config) -> DatabaseClient:  # type: ignore
+async def testing_db_client(testing_config: Config) -> DatabaseClient:  # type: ignore
     recreate_postgres_tables()
-    database_client = DatabaseClient(testing_config, ["user", "liked_post"])
+    database_client = DatabaseClient(testing_config)
     await database_client.connect()
     yield database_client
     await database_client.disconnect()
 
 
 @pytest.fixture
-def user_service(testing_db_client) -> UserService:
+def user_service(testing_db_client: DatabaseClient) -> UserService:
     user_service = UserService(testing_db_client)
     return user_service
 
 
 @pytest.fixture
 def mocking_database_client() -> DatabaseClient:
-    def side_effect(*args, **kwargs):
+    def side_effect(*args: Any, **kwargs: Any) -> Tuple[int]:
         return (1, )
 
     mock = AsyncMock()
