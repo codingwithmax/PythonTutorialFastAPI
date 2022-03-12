@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 from app.schemas.user import (
     FullUserProfile,
 )
@@ -21,7 +21,9 @@ class UserService:
 
         total_query = select(func.count(self.database_client.user.c.id).label("total"))
         total_res = await self.database_client.get_first(total_query)
-        total = total_res[0]
+        total = 0
+        if total_res:
+            total = total_res[0]
         user_infos = []
 
         for user in users:
@@ -68,7 +70,7 @@ class UserService:
             short_description=full_profile_info.short_description,
             long_bio=full_profile_info.long_bio,
         )
-        data = {**data_no_id, "id": user_id}
+        data: dict[str, Union[str, int]] = {**data_no_id, "id": user_id}
 
         query = select(self.database_client.user).where(self.database_client.user.c.id == user_id)
         user = await self.database_client.get_first(query)

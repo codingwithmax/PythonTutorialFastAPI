@@ -9,6 +9,6 @@ config = Config()
 engine = create_engine(config.postgres_host)
 
 
-def recreate_postgres_tables():
+def recreate_postgres_tables() -> None:
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

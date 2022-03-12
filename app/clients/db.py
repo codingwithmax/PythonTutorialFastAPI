@@ -33,8 +33,8 @@ class DatabaseClient:
 
     def _set_internal_database_tables(self, tables: list[str]):
         # e.g. sets DatabaseClient.user = DatabaseClient.metadata.tables["user"] if "user" in tables
-        for table in tables:
-            setattr(self, table, self.metadata.tables[table])
+        self.user = self.metadata.tables["user"]
+        self.liked_post = self.metadata.tables["liked_post"]
 
     async def get_first(self, query: Union[Select, Insert]) -> Optional[Row]:
         async with self.database.transaction():
