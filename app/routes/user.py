@@ -3,15 +3,15 @@ import logging
 
 from fastapi import APIRouter, Depends
 
+from app.clients.db import DatabaseClient
+from app.clients.redis import RedisCache
+from app.dependencies import rate_limit
 from app.schemas.user import (
     CreateUserResponse,
     FullUserProfile,
     MultipleUsersResponse,
 )
 from app.services.user import UserService
-from app.dependencies import rate_limit
-from app.clients.db import DatabaseClient
-from app.clients.redis import RedisCache
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,8 @@
 import datetime
 
+from sqlalchemy import TIMESTAMP, Column, Integer, String, UniqueConstraint
+
 from models.base import Base
-from sqlalchemy import Column, Integer, TIMESTAMP, String, UniqueConstraint
 
 
 class User(Base):

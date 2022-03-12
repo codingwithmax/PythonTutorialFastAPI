@@ -2,9 +2,9 @@ import os
 from typing import Optional, Union
 
 from databases import Database
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.engine import Row
-from sqlalchemy.sql.expression import Select, Delete, Insert
+from sqlalchemy.sql.expression import Delete, Insert, Select
 
 from app.config import Config
 

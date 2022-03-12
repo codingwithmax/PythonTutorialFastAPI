@@ -3,10 +3,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.exceptions import UserNotFound
-from app.services.user import UserService
-from app.schemas.user import FullUserProfile
 from app.clients.db import DatabaseClient
+from app.exceptions import UserNotFound
+from app.schemas.user import FullUserProfile
+from app.services.user import UserService
 
 
 @pytest.mark.asyncio

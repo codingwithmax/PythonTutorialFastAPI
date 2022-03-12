@@ -1,5 +1,6 @@
-from fastapi.testclient import TestClient
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from app.schemas.user import FullUserProfile
 
 
