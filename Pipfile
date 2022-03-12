@@ -24,6 +24,7 @@ aioresponses = "*"
 pytest-cov = "*"
 alembic = "*"
 isort = "*"
+black = "*"
 
 [requires]
 python_version = "3.9"

@@ -26,7 +26,9 @@ class RedisCache:
             decompressed_value = snappy.decompress(compressed_val)
             return pickle.loads(decompressed_value)
         except Exception as e:
-            logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
+            logger.error(
+                f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}"
+            )
         return
 
     async def set(self, key: Union[str, int], value: Any, prefix: str) -> None:
@@ -36,7 +38,9 @@ class RedisCache:
             compressed_value = snappy.compress(serialized_value)
             await self.redis.set(storage_key, compressed_value, ex=self.ttl)
         except Exception as e:
-            logger.error(f"Encountered error {str(e)} when trying to save: {value} to {storage_key}")
+            logger.error(
+                f"Encountered error {str(e)} when trying to save: {value} to {storage_key}"
+            )
         return
 
     async def delete(self, *args: Any, prefix: Any) -> None:
@@ -51,14 +55,20 @@ class RedisCache:
             decompressed_val = snappy.decompress(compressed_val)
             return pickle.loads(decompressed_val)
         except Exception as e:
-            logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
+            logger.error(
+                f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}"
+            )
         return
 
-    async def hset(self, name: Any, mapping: dict[Union[str, int], Any], prefix: Any) -> None:
+    async def hset(
+        self, name: Any, mapping: dict[Union[str, int], Any], prefix: Any
+    ) -> None:
         storage_name = self.create_storage_name(name, prefix)
         compressed_serialized_mapping = {}
         for key in mapping:
-            compressed_serialized_mapping[key] = self.serialize_and_compress(mapping[key])
+            compressed_serialized_mapping[key] = self.serialize_and_compress(
+                mapping[key]
+            )
         await self.redis.hset(storage_name, mapping=compressed_serialized_mapping)
         await self.redis.expire(storage_name, self.ttl)
 
@@ -77,7 +87,9 @@ class RedisCache:
         return f"{self.pagination_prefix}"
 
     async def clear_pagination_cache(self, prefix: str) -> None:
-        set_storage_name = self.create_storage_name(self.get_pagination_set_key(), prefix)
+        set_storage_name = self.create_storage_name(
+            self.get_pagination_set_key(), prefix
+        )
         limits = await self.redis.smembers(set_storage_name)
         for limit in limits:
             # user:pagination:{limit}

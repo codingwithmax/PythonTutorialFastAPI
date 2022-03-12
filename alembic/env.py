@@ -18,7 +18,7 @@ fileConfig(config.config_file_name)  # type: ignore[arg-type]
 # target_metadata = mymodel.Base.metadata
 import sys
 
-sys.path.insert(1, '')
+sys.path.insert(1, "")
 
 from models import Base
 
@@ -68,9 +68,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -11,8 +11,7 @@ from app.services.user import UserService
 
 @pytest.mark.asyncio
 async def test_delete_user_works_properly(
-        user_service: UserService,
-        sample_full_user_profile: FullUserProfile
+    user_service: UserService, sample_full_user_profile: FullUserProfile
 ) -> None:
     user_id = await user_service.create_user(sample_full_user_profile)
     assert user_id is not None
@@ -23,9 +22,9 @@ async def test_delete_user_works_properly(
 
 @pytest.mark.asyncio
 async def test_create_user_works_properly(
-        user_service_mocked_db: UserService,
-        mocking_database_client: DatabaseClient,
-        sample_full_user_profile: FullUserProfile,
+    user_service_mocked_db: UserService,
+    mocking_database_client: DatabaseClient,
+    sample_full_user_profile: FullUserProfile,
 ) -> None:
     user_id = await user_service_mocked_db.create_user(sample_full_user_profile)
     mocked_function = cast(Mock, mocking_database_client.get_first)
@@ -37,9 +36,9 @@ async def test_create_user_works_properly(
 
 @pytest.mark.asyncio
 async def test_get_all_users_with_pagination_works_properly(
-        user_service_mocked_db: UserService,
-        sample_full_user_profile: FullUserProfile,
-        mocking_database_client: DatabaseClient,
+    user_service_mocked_db: UserService,
+    sample_full_user_profile: FullUserProfile,
+    mocking_database_client: DatabaseClient,
 ) -> None:
     offset = 3
     limit = 5
@@ -49,6 +48,8 @@ async def test_get_all_users_with_pagination_works_properly(
     assert get_paginated_function.called
     get_paginated_function.assert_awaited_once()
 
-    assert get_paginated_function.call_args[0][0].compare(user_service_mocked_db._get_user_info_query())
+    assert get_paginated_function.call_args[0][0].compare(
+        user_service_mocked_db._get_user_info_query()
+    )
     assert get_paginated_function.call_args[0][1] == limit
     assert get_paginated_function.call_args[1]["offset"] == offset
