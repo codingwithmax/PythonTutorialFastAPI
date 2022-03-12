@@ -27,7 +27,8 @@ class RedisCache:
             return pickle.loads(decompressed_value)
         except Exception as e:
             logger.error(
-                f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}"
+                f"Encountered error {str(e)} when trying to"
+                f" read prefix: {prefix} and key:{key}"
             )
         return
 
@@ -39,7 +40,8 @@ class RedisCache:
             await self.redis.set(storage_key, compressed_value, ex=self.ttl)
         except Exception as e:
             logger.error(
-                f"Encountered error {str(e)} when trying to save: {value} to {storage_key}"
+                f"Encountered error {str(e)} when trying to"
+                f" save: {value} to {storage_key}"
             )
         return
 
@@ -56,7 +58,8 @@ class RedisCache:
             return pickle.loads(decompressed_val)
         except Exception as e:
             logger.error(
-                f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}"
+                f"Encountered error {str(e)} when trying to"
+                f" read prefix: {prefix} and key:{key}"
             )
         return
 
