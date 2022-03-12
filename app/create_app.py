@@ -8,9 +8,8 @@ from app.config import Config
 
 def create_application() -> FastAPI:
     config = Config()
-    tables = ["user", "liked_post"]
     redis_cache = RedisCache(config)
-    database_client = DatabaseClient(config, tables)
+    database_client = DatabaseClient(config)
     user_router = create_user_router(database_client, redis_cache)
 
     app = FastAPI()

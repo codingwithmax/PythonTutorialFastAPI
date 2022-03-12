@@ -2,9 +2,11 @@ from typing import cast
 from unittest.mock import Mock
 
 import pytest
+
 from app.exceptions import UserNotFound
 from app.services.user import UserService
 from app.schemas.user import FullUserProfile
+from app.clients.db import DatabaseClient
 
 
 @pytest.mark.asyncio
@@ -21,10 +23,10 @@ async def test_delete_user_works_properly(
 
 @pytest.mark.asyncio
 async def test_create_user_works_properly(
-        user_service_mocked_db,
-        mocking_database_client,
-        sample_full_user_profile,
-):
+        user_service_mocked_db: UserService,
+        mocking_database_client: DatabaseClient,
+        sample_full_user_profile: FullUserProfile,
+) -> None:
     user_id = await user_service_mocked_db.create_user(sample_full_user_profile)
     mocked_function = cast(Mock, mocking_database_client.get_first)
 
@@ -35,10 +37,10 @@ async def test_create_user_works_properly(
 
 @pytest.mark.asyncio
 async def test_get_all_users_with_pagination_works_properly(
-        user_service_mocked_db,
-        sample_full_user_profile,
-        mocking_database_client,
-):
+        user_service_mocked_db: UserService,
+        sample_full_user_profile: FullUserProfile,
+        mocking_database_client: DatabaseClient,
+) -> None:
     offset = 3
     limit = 5
     await user_service_mocked_db.get_all_users_with_pagination(offset, limit)

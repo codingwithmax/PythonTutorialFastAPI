@@ -1,12 +1,13 @@
 import pytest
 from app.create_app import create_application
 from models import recreate_postgres_tables
+from fastapi import FastAPI
 
 
-@pytest.fixture(scope='session')
-def base_testing_app():
-    app = create_application()
+@pytest.fixture(scope='function')
+def base_testing_app() -> FastAPI:
     recreate_postgres_tables()
+    app = create_application()
     return app
 
 

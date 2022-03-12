@@ -25,7 +25,7 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
     user_service = UserService(database_client)
 
     @user_router.get("/all", response_model=MultipleUsersResponse)
-    async def get_all_users_paginated(start: int = 0, limit: int = 2):
+    async def get_all_users_paginated(start: int = 0, limit: int = 2) -> MultipleUsersResponse:
         cache_key = redis_cache.get_pagination_key(limit)
         multiple_users_response = await redis_cache.hget(cache_key, start, redis_cache.user_prefix)
         if multiple_users_response:
@@ -40,7 +40,7 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
         return formatted_users
 
     @user_router.get("/{user_id}", response_model=FullUserProfile)
-    async def get_user_by_id(user_id: int):
+    async def get_user_by_id(user_id: int) -> FullUserProfile:
         full_user_profile = await redis_cache.get(user_id, redis_cache.user_prefix)
         if full_user_profile:
             return full_user_profile
@@ -59,19 +59,19 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
         return created_user
 
     @user_router.delete("/flush-cache", status_code=200)
-    async def flushdb():
+    async def flushdb() -> None:
         await redis_cache.flushdb()
         return
 
     @user_router.delete("/{user_id}")
-    async def remove_user(user_id: int):
+    async def remove_user(user_id: int) -> None:
 
         await user_service.delete_user(user_id)
         await redis_cache.delete(user_id, prefix=redis_cache.user_prefix)
         await redis_cache.clear_pagination_cache(redis_cache.user_prefix)
 
     @user_router.post("/", response_model=CreateUserResponse, status_code=201)
-    async def add_user(full_profile_info: FullUserProfile):
+    async def add_user(full_profile_info: FullUserProfile) -> CreateUserResponse:
         user_id = await user_service.create_user(full_profile_info)
         await redis_cache.set(user_id, full_profile_info, redis_cache.user_prefix)
         await redis_cache.clear_pagination_cache(redis_cache.user_prefix)
@@ -79,11 +79,11 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
         return created_user
 
     @user_router.on_event("startup")
-    async def startup():
+    async def startup() -> None:
         await database_client.connect()
 
     @user_router.on_event("shutdown")
-    async def shutdown():
+    async def shutdown() -> None:
         await database_client.disconnect()
 
     return user_router
