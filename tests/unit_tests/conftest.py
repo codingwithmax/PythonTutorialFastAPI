@@ -44,7 +44,7 @@ def testing_config() -> Config:
 
 
 @pytest_asyncio.fixture
-async def testing_db_client(testing_config) -> DatabaseClient:
+async def testing_db_client(testing_config) -> DatabaseClient:  # type: ignore
     recreate_postgres_tables()
     database_client = DatabaseClient(testing_config, ["user", "liked_post"])
     await database_client.connect()
@@ -53,7 +53,7 @@ async def testing_db_client(testing_config) -> DatabaseClient:
 
 
 @pytest.fixture
-def user_service(testing_db_client):
+def user_service(testing_db_client) -> UserService:
     user_service = UserService(testing_db_client)
     return user_service
 

@@ -51,7 +51,7 @@ def create_user_router(database_client: DatabaseClient, redis_cache: RedisCache)
         return full_user_profile
 
     @user_router.put("/{user_id}", response_model=CreateUserResponse)
-    async def update_user(user_id: int, full_profile_info: FullUserProfile) -> int:
+    async def update_user(user_id: int, full_profile_info: FullUserProfile) -> CreateUserResponse:
         user_id = await user_service.create_update_user(full_profile_info, user_id)
         await redis_cache.set(user_id, full_profile_info, redis_cache.user_prefix)
         await redis_cache.clear_pagination_cache(redis_cache.user_prefix)

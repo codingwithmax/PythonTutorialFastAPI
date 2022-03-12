@@ -3,10 +3,15 @@ from unittest.mock import Mock
 
 import pytest
 from app.exceptions import UserNotFound
+from app.services.user import UserService
+from app.schemas.user import FullUserProfile
 
 
 @pytest.mark.asyncio
-async def test_delete_user_works_properly(user_service, sample_full_user_profile):
+async def test_delete_user_works_properly(
+        user_service: UserService,
+        sample_full_user_profile: FullUserProfile
+) -> None:
     user_id = await user_service.create_user(sample_full_user_profile)
     assert user_id is not None
     await user_service.delete_user(user_id)
