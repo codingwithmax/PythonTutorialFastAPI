@@ -6,6 +6,9 @@ ENV PYROOT /pyroot
 ENV PYTHONUSERBASE ${PYROOT}
 ENV PATH=${PATH}:${PYROOT}/bin
 
+RUN apk update
+RUN apk add --no-cache g++ snappy-dev
+
 RUN PIP_USER=1 pip install pipenv
 COPY Pipfile* ./
 
@@ -17,6 +20,9 @@ FROM python:3.9-alpine
 ENV PYROOT /pyroot
 ENV PYTHONUSERBASE ${PYROOT}
 ENV PATH=${PATH}:${PYROOT}/bin
+
+RUN apk update
+RUN apk add --no-cache g++ snappy-dev
 
 RUN addgroup -S myapp && adduser -S -G myapp user -u 1234
 COPY --chown=myapp:user --from=base ${PYROOT}/ ${PYROOT}/

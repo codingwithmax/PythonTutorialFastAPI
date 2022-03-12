@@ -2,6 +2,7 @@ import logging
 import pickle
 
 import aioredis
+import snappy
 
 from app.config import Config
 
@@ -20,8 +21,9 @@ class RedisCache:
     async def get(self, key, prefix):
         try:
             storage_key = f"{prefix}:{key}"
-            val = await self.redis.get(storage_key)
-            return pickle.loads(val)
+            compressed_val = await self.redis.get(storage_key)
+            decompressed_value = snappy.decompress(compressed_val)
+            return pickle.loads(decompressed_value)
         except Exception as e:
             logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
         return
@@ -30,7 +32,8 @@ class RedisCache:
         try:
             storage_key = f"{prefix}:{key}"
             serialized_value = pickle.dumps(value)
-            await self.redis.set(storage_key, serialized_value, ex=self.ttl)
+            compressed_value = snappy.compress(serialized_value)
+            await self.redis.set(storage_key, compressed_value, ex=self.ttl)
         except Exception as e:
             logger.error(f"Encountered error {str(e)} when trying to save: {value} to {storage_key}")
         return
@@ -43,18 +46,19 @@ class RedisCache:
     async def hget(self, name, key, prefix):
         try:
             storage_name = self.create_storage_name(name, prefix)
-            val = await self.redis.hget(storage_name, key)
-            return pickle.loads(val)
+            compressed_val = await self.redis.hget(storage_name, key)
+            decompressed_val = snappy.decompress(compressed_val)
+            return pickle.loads(decompressed_val)
         except Exception as e:
             logger.error(f"Encountered error {str(e)} when trying to read prefix: {prefix} and key:{key}")
         return
 
     async def hset(self, name, mapping, prefix):
         storage_name = self.create_storage_name(name, prefix)
-        serialized_mapping = {}
+        compressed_serialized_mapping = {}
         for key in mapping:
-            serialized_mapping[key] = pickle.dumps(mapping[key])
-        await self.redis.hset(storage_name, mapping=serialized_mapping)
+            compressed_serialized_mapping[key] = self.serialize_and_compress(mapping[key])
+        await self.redis.hset(storage_name, mapping=compressed_serialized_mapping)
         await self.redis.expire(storage_name, self.ttl)
 
     async def hdel(self, name, key, prefix):
@@ -86,3 +90,8 @@ class RedisCache:
     @staticmethod
     def create_storage_name(key, prefix):
         return f"{prefix}:{key}"
+
+    @staticmethod
+    def serialize_and_compress(value):
+        ser_val = pickle.dumps(value)
+        return snappy.compress(ser_val)

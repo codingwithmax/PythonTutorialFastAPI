@@ -13,6 +13,7 @@ sqlalchemy = "*"
 psycopg2-binary = "*"
 databases = {extras = ["postgresql"], version = "*"}
 aioredis = "*"
+python-snappy = "*"
 
 [dev-packages]
 mypy = "*"
