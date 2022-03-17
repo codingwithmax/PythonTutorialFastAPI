@@ -11,7 +11,7 @@ jobs:
       - name: Build docker compose
         run: docker-compose up -d app-test testingdb redistestdb
       - name: Check lint
-        run: docker-compose exec -T app-test mypy . && isort --check-only . && black --check . && flake8 app models tests
+        run: docker-compose exec app-test /bin/sh -c " mypy . && isort --check-only . && black --check . && flake8 app models tests"
       - name: Run tests
         run: make unit_tests
       - name: Take down containers
