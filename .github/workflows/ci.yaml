@@ -1,0 +1,21 @@
+name: Application CI
+
+env:
+  GITHUB_REPO: {{ github.event.repository.name }}
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+      - name: Build docker compose
+        run: docker-compose up -d app-test testingdb redistestdb
+      - name: Check lint
+        run: make check_lint
+      - name: Run tests
+        run: make unit_tests
+      - name: Take down containers
+        run: make stop
