@@ -1,8 +1,5 @@
 name: Application CI
 
-env:
-  GITHUB_REPO: {{ github.event.repository.name }}
-
 on: push
 
 jobs:
