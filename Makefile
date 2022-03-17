@@ -12,14 +12,14 @@ stop:
 	@docker-compose down
 
 unit_tests:
-	@docker-compose exec app-test \
+	@docker-compose exec -T app-test \
 	$(UNIT_TESTS)
 
 unit_tests_local:
 	@$(UNIT_TESTS)
 
 check_lint:
-	@docker-compose exec app-test mypy . && isort --check-only . && black --check . \
+	@docker-compose exec -T app-test mypy . && isort --check-only . && black --check . \
 	&& flake8 app models tests
 
 fix_lint:
