@@ -25,7 +25,7 @@ RUN apk update
 RUN apk add --no-cache g++ snappy-dev
 
 RUN addgroup -S myapp && adduser -S -G myapp user -u 1234
-COPY --chown=myapp:user --from=base ${PYROOT}/ ${PYROOT}/
+COPY --chown=1234 --from=base ${PYROOT}/ ${PYROOT}/
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src
