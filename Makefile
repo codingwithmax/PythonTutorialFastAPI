@@ -12,7 +12,7 @@ stop:
 	@docker-compose down
 
 unit_tests:
-	@docker-compose exec app-test \
+	@docker-compose exec -T app-test \
 	$(UNIT_TESTS)
 
 unit_tests_local:
