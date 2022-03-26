@@ -11,8 +11,8 @@ jobs:
       - name: Build docker compose
         run: docker-compose up -d app-test testingdb redistestdb
       - name: Check lint
-        run: make check_lint
+        run: make check_lint_ci
       - name: Run tests
-        run: make unit_tests
+        run: make unit_tests_ci
       - name: Take down containers
         run: make stop
