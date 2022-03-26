@@ -19,7 +19,7 @@ unit_tests_local:
 	@$(UNIT_TESTS)
 
 check_lint:
-	@docker-compose exec app-test /bin/sh -c "mypy . && isort --check-only . && black --check . \
+	@docker-compose exec -T app-test /bin/sh -c "mypy . && isort --check-only . && black --check . \
 	&& flake8 app models tests"
 
 fix_lint:
